@@ -1,0 +1,11 @@
+push 300
+push 2
+mul
+push 800
+push 4
+div
+add
+push 120
+sub
+out
+htl

@@ -1,0 +1,22 @@
+1 300
+1 2
+5
+1 800
+1 4
+11
+5
+1 120
+6
+41
+50
+push 300
+push 2
+mul
+push 800
+push 4
+div
+add
+push 120
+sub
+out
+htl
