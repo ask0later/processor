@@ -1,11 +1,11 @@
 #include "asm.h"
 
 
-const char* BYTEcode = "../BYTEcodefile.txt";
+const char* BYTEcode       = "../BYTEcodefile.txt";
 const char* bytecodebinary = "../bytebinarycode";
 
 
-void Assembler(Text* buf, Command* cmd)
+void Assembler(Text* buf, Command* cmd, Label* Labels)
 {
     assert(buf);
     assert(cmd);
@@ -15,29 +15,25 @@ void Assembler(Text* buf, Command* cmd)
     char* ptr = buf->binarycode;
 
 
-    for (size_t counter = 0; counter < buf->nlines; counter++)
+    for (size_t counterptr = 0; counterptr < buf->nlines; counterptr++)
     {
-        ptr_line = ParseInstruction(cmd, ptr_line) + 1;
-        EmitInstrction(cmd);
-        EmitInstrctionBinary(cmd, buf);
+        ptr_line = ParseInstruction(cmd, ptr_line, Labels, counterptr) + 1;
+        EmitInstrction(cmd, Labels);
+        EmitInstrctionBinary(cmd, buf, Labels);
         
-        cmd->code   = MAX_IN_BYTE;
-        cmd->value  =     INT_MAX;
-        cmd->reg[0] =     's';
+        cmd->code   = (char) MAX_IN_BYTE;
+        cmd->value  =      INT_MAX;
     }
-
-    //ptr = (char*) realloc(buf->binarycode, buf->memory_size);
 
     FILE* fname = fopen(bytecodebinary, "wb");
 
-    fwrite(ptr, buf->binarycode - ptr + 1, sizeof(char),fname);
+    fwrite(ptr, (size_t) (buf->binarycode - ptr + 1), sizeof(char),fname);
 
     free(ptr);
     fclose(fname);
 }
 
-
-char* ParseInstruction(Command* cmd, char* ptr_line)
+char* ParseInstruction(Command* cmd, char* ptr_line, Label* Labels, size_t counterptr)
 {
     assert(cmd);
     assert(ptr_line);
@@ -47,10 +43,10 @@ char* ParseInstruction(Command* cmd, char* ptr_line)
     // strtok()
     char* position = ptr_line + strlen(cmd->command_name);
 
-    return ParseOperand(cmd, position);
+    return ParseOperand(cmd, position, Labels, counterptr);
 }
 
-char* ParseOperand(Command* cmd, char* position)
+char* ParseOperand(Command* cmd, char* position, Label* Labels, size_t counterptr)
 {
     assert(cmd);
     assert(position);
@@ -60,15 +56,58 @@ char* ParseOperand(Command* cmd, char* position)
         if (strcmp(cmd->command_name, cmds[counter].name) == 0)
             {
                 cmd->code = (char) (cmds[counter].valueName);
+                
                 if      (cmds[counter].argument_type == TWO_ARGUMENTS)
-                    return ParseValueArgument(cmd, position);
+                    return  ParseValueArgument(cmd, position);
                 else if (cmds[counter].argument_type == ONE_ARGUMENTS)
                     return ParseNumberArgument(cmd, position);
+                else if (cmds[counter].argument_type == LABEL_ARGUMENTS)
+                    return  ParseLabelArgument(cmd, position, Labels, counterptr);
                 else
                     return position;
             }
     }
     return position;
+}
+char* ParseLabelArgument(Command* cmd, char* position, Label* Labels, size_t counterptr)
+{
+    assert(cmd);
+    assert(position);
+
+    cmd->code |= (char) LAB_BIT;
+
+    char string[SIZE_ARGUMENT] = {};
+    if (sscanf(position, "%d", &cmd->value) == 1)
+    {
+        cmd->code |= NUM_BIT;
+
+        Labels[cmd->numberlabelcmd].value_ptr = (size_t) cmd->value;
+        sscanf(position, "%s", string);
+        
+        position = position + strlen(string);        
+    }
+    else
+    {
+        sscanf(position, "%s", string);
+        
+        int result = CompareNameLabels(string, Labels);
+        
+        if (result == -1)
+        {
+            memcpy(Labels[cmd->numberlabelcmd].name, string, strlen(string) + 1);
+            Labels[cmd->numberlabelcmd].value_ptr = (int) counterptr;
+            cmd->numberlabelcmd++;
+        }
+        else
+        {
+            cmd->value = Labels[(size_t) result].value_ptr;
+        }
+        
+        position = position + strlen(string);
+    }
+    position += SPACE;
+      
+    return position;  
 }
 
 char* ParseValueArgument(Command* cmd, char* position)
@@ -80,7 +119,7 @@ char* ParseValueArgument(Command* cmd, char* position)
     {
         cmd->code |= NUM_BIT;
 
-        char length [10] = {};
+        char length[SIZE_ARGUMENT] = {};
         sscanf(position, "%s", length);
         
         position = position + strlen(length);        
@@ -119,7 +158,7 @@ char* ParseNumberArgument(Command* cmd, char* position)
     return position;
 }
 
-void EmitInstrction(Command* cmd)
+void EmitInstrction(Command* cmd, Label* Labels)
 {
     assert(cmd);
     
@@ -127,10 +166,12 @@ void EmitInstrction(Command* cmd)
 
     assert(fp);
 
-    fprintf(fp, "%d", cmd->code);
-    
-    
-    if      (cmd->code & NUM_BIT)
+    cmd->numberlabelcmd--;
+
+    fprintf(fp, "%d", (unsigned char)cmd->code);
+
+
+    if (cmd->code & NUM_BIT)
     {
         fprintf(fp," %d\n", cmd->value);
     }
@@ -138,18 +179,24 @@ void EmitInstrction(Command* cmd)
     {
         fprintf(fp," %lu\n", WriteArrayRegister(cmd));            
     }
-    else
+    else if (cmd->code & LAB_BIT)
     {
         if (cmd->value != INT_MAX)
-            fprintf(fp," %d\n", cmd->value);
+            fprintf(fp, " %d\n", cmd->value);
         else
-            fprintf(fp,   "\n");
+            fprintf(fp, " %d\n", (char)Labels[cmd->numberlabelcmd].value_ptr);
     }
+    else
+    {
+        fprintf(fp, " \n");
+    }
+    cmd->numberlabelcmd++;
     fclose(fp);
 }
 
 size_t WriteArrayRegister(Command* cmd)
 {
+    assert(cmd);
 
     for (size_t counter = 0; counter < sizeof(reg) / sizeof(char*); counter++)
         if (strcmp(cmd->reg, reg[counter]) == 0)
@@ -157,7 +204,20 @@ size_t WriteArrayRegister(Command* cmd)
     return 0;
 }
 
-void EmitInstrctionBinary(Command* cmd, Text* buf)
+int CompareNameLabels(char* string, Label* Labels)
+{
+    assert(string);
+    assert(Labels);
+
+    for (size_t counter = 0; counter < NUM_LABELS; counter++)
+    {
+        if (strcmp(string, Labels[counter].name) == 0)
+            return (int) counter;   
+    }
+    return -1;
+}
+
+void EmitInstrctionBinary(Command* cmd, Text* buf, Label* Labels)
 {
     *buf->binarycode = cmd->code;
     (buf->binarycode)++;
@@ -167,9 +227,14 @@ void EmitInstrctionBinary(Command* cmd, Text* buf)
         memcpy(buf->binarycode, &cmd->value, sizeof(cmd->value));
         buf->binarycode += sizeof(int);
     }
-    else if (cmd->code & REG_BIT)//
+    else if (cmd->code & REG_BIT)
     {
         *buf->binarycode = (char) WriteArrayRegister(cmd);
         (buf->binarycode)++;
+    }
+    else if (cmd->code & LAB_BIT)
+    {
+        memcpy(buf->binarycode, &Labels[cmd->numberlabelcmd].value_ptr, sizeof(cmd->value));
+        buf->binarycode += sizeof(int);
     }
 }

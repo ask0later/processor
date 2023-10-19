@@ -1,8 +1,9 @@
 #include "readFile.h"
 
-const size_t MAX_SIZE_REGISTR = 5;
-const size_t MAX_SIZE_COMMAND = 5;
-const size_t SIZEBINARY     = 255;
+const size_t MAX_SIZE_REGISTR =   5;
+const size_t MAX_SIZE_COMMAND =   5;
+const size_t MAX_SIZE_LABEL   =  10;
+const size_t SIZEBINARY       = 255;
 
 
 
@@ -21,19 +22,19 @@ void CreateBuffer(Text* buf, Command* cmd)
     Read_Commands(buf);
     buf->nlines = Get_Num_Line(buf);
 
-    cmd->code  =      -1;
-    cmd->value = INT_MAX;
-    
+    cmd->code           =       0;
+    cmd->value          = INT_MAX;
+
     cmd->command_name = (char*) calloc(MAX_SIZE_COMMAND, sizeof(char));
     cmd->reg          = (char*) calloc(MAX_SIZE_REGISTR, sizeof(char));
-    cmd->reg[0] = 's';
 }
+
 void DeleteBuffer(Text* buf, Command* cmd)
 {
     buf->sizebuf = INT_MAX;
     buf->nlines  = INT_MAX;
 
-    cmd->code = MAX_IN_BYTE;
+    cmd->code = (char) MAX_IN_BYTE;
 
     free(buf->buffer      );
     free(cmd->command_name);
