@@ -4,31 +4,17 @@
 
 enum Commands
 {   
-    PUSH =  1,
-    POP  =  2,
-    ADD  =  3,
-    SUB  =  4,
-    MUL  =  5,
-    DIV  =  6, 
+    PUSH =  1, POP  =  2,
+    ADD  =  3, SUB  =  4,
+    MUL  =  5, DIV  =  6, 
     SQRT =  7,
-    SIN  =  8,
-    COS  =  9,
+    SIN  =  8, COS  =  9,
     IN   = 10,
-    OUT  = 11,
-    HTL  = 12
+    JA   = 11, JAE  = 12, JB   = 13,
+    JBE  = 14, JE   = 15, JNE  = 16,
+    JMP  = 17, JM   = 18, LAB  = 19,
+    OUT  = 20, HTL  = 21
 };
 
-// const char  push[] = {'p', 'u', 's', 'h'};
-// const char   pop[] = {'p', 'o', 'p'     };
-// const char   add[] = {'a', 'd', 'd'     };
-// const char   sub[] = {'s', 'u', 'b'     };
-// const char   mul[] = {'m', 'u', 'l'     };
-// const char  div_[] = {'d', 'i', 'v'     };
-// const char  sqrt[] = {'s', 'q', 'r', 't'};
-// const char   sin[] = {'s', 'i', 'n'     };
-// const char   cos[] = {'c', 'o', 's'     };
-// const char    in[] = {'i', 'n'          };
-// const char   out[] = {'o', 'u', 't'     };
-// const char   htl[] = {'h', 't', 'l'     };
 
 #endif

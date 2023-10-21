@@ -20,3 +20,20 @@ push 120
 sub
 out
 htl
+
+push 20
+pop rax
+NEXT:
+push rax
+push rax
+mul
+out
+push rax
+push 1
+add
+pop rax
+push rax
+push 10
+jb NEXT
+htl
+

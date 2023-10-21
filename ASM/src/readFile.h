@@ -17,40 +17,42 @@ const size_t        SIZE_ARGUMENT =  10;
 
 struct Text
 {
-    size_t       nlines;
-    size_t      sizebuf;
-    char*        buffer;
-    char*    binarycode;
-    size_t  memory_size;
+    size_t           nlines;
+    size_t          sizebuf;
+    char*            buffer;
+    size_t         position;
+
+    char*        binarycode;
+    int  binary_position;
 };
 
 struct Command
 {
-    char             code;
-    char*    command_name;
-    char*             reg;
-    int             value;
-    size_t numberlabelcmd;
+    char               code;
+    char*      command_name;
+    char*               reg;
+    int               value;
+    size_t   numberlabelcmd;
 };
 
 struct OneCommand
 {
     char name[SIZE_ARGUMENT];
-    int argument_type;
-    int valueName;
+    int        argument_type;
+    int            valueName;
 };
 
 struct Label
 {
     char name[SIZE_ARGUMENT];
-    int value_ptr;
+    int            value_ptr;
 };
 
-void  CreateBuffer(Text* buf, Command* cmd);
+void  CreateBuffer(Text* buf, Command* cmd, const char*  input_file);
 void  DeleteBuffer(Text* buf, Command* cmd);
-void Read_Commands(Text* buf);
+void Read_Commands(Text* buf, const char*  input_file);
 
-size_t Get_Size_File();
+size_t Get_Size_File(const char*  input_file);
 size_t Get_Num_Line(Text* buf);
 
 #endif
