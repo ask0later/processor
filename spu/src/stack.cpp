@@ -248,7 +248,7 @@ void StackDump(Stack* stk, int errors/*, const char* func, const int line, const
 
 void PrintStackData(Stack* stk, FILE* fp)
 {
-    fprintf(fp, "OOOOOOOOOO\n");
+    fprintf(fp, "___________________\n");
     for (int counter = 0; counter < stk->size; counter++)
         {
             fprintf(fp,"%3d||%8d||\n", counter + 1, *(stk->sequence + counter)); 
