@@ -138,16 +138,15 @@ void Re_Calloc(bool more_or_less, Stack* stk)
     }
 }
 
-
+#ifdef HASH_VERIFICATION
 void StackRehash(Stack* stk)
 {
-#ifdef HASH_VERIFICATION
     stk->hash_struct = 0;
     stk->hash_buf = 0;
     stk->hash_struct = HashFunction(stk, sizeof(*stk));
     stk->hash_buf = HashFunction(stk->sequence, (long unsigned int) stk->capacity * sizeof(elem_t));
-#endif
 }
+#endif
 
 
 
@@ -215,6 +214,7 @@ void Verify(Stack* stk, int errors/*, const char* func, const int line, const ch
     int error_bit = 1;
     if (!((ERROR_NULL_STK & errors) || (ERROR_ALLOC & errors)))
     {
+
         StackDump(stk, errors);//STACK_DUMP(stk);
     }
     for(size_t counter = 0; counter < NUM_ERRORS; counter++)
@@ -236,18 +236,19 @@ void StackDump(Stack* stk, int errors/*, const char* func, const int line, const
 #ifdef HASH_VERIFICATION
     if (!(errors & ERROR_HASH_STRUCT))
     { 
-        PrintSequence(stk, fp);
+        PrintStackData(stk, fp);
     }
 #else
-    PrintSequence(stk, fp);
+    PrintStackData(stk, fp);
 #endif
     
     
     fclose(fp);
 }
 
-void PrintSequence(Stack* stk, FILE* fp)
+void PrintStackData(Stack* stk, FILE* fp)
 {
+    fprintf(fp, "OOOOOOOOOO\n");
     for (int counter = 0; counter < stk->size; counter++)
         {
             fprintf(fp,"%3d||%8d||\n", counter + 1, *(stk->sequence + counter)); 

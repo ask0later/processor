@@ -4,15 +4,14 @@
 
 int main()
 {
-    struct Text  buf = {};
+    struct Text  cmd = {};
     struct Stack stk = {};
 
-    CreateBuffer(&buf);
+    CreateBuffer(&cmd);
     StackCtor(&stk);
-    //printf("%lu start \n", buf.buffer);
 
-    Processor(&stk, &buf);
+    Processor(&stk, &cmd);
 
     StackDtor(&stk);
-    DeleteBuffer(&buf);
+    DeleteBuffer(&cmd);
 }

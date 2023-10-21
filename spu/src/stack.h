@@ -83,6 +83,6 @@ void StackDump(Stack* stk, int errors/*, const char* func, const int line, const
 void PrintStack(Stack* stk);
 
 
-void PrintSequence(Stack* stk, FILE* fp);
+void PrintStackData(Stack* stk, FILE* fp);
 
 #endif

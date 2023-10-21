@@ -18,6 +18,8 @@ struct Text
     size_t sizebuf;
     char* buffer;
     
+    size_t position;
+
     int* codebuf;
     size_t counter;
 };

@@ -1,6 +1,7 @@
 TARGET = SPU
 CC = g++
-DEFINE = -DVALERA_VERIFICATION -DHASH_VERIFICATION
+DEFINE = 
+
 CFLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggressive-loop-optimizations -Wc++14-compat -Wmissing-declarations \
 -Wcast-align -Wcast-qual -Wchar-subscripts -Wconditionally-supported -Wconversion -Wctor-dtor-privacy -Wempty-body -Wfloat-equal -Wformat-nonliteral \
 -Wformat-security -Wformat-signedness -Wformat=2 -Winline -Wlogical-op -Wnon-virtual-dtor -Wopenmp-simd -Woverloaded-virtual -Wpacked -Wpointer-arith \
@@ -20,7 +21,7 @@ OBJ = $(patsubst $(PREF_SRC)%.cpp, $(PREF_OBJ)%.o, $(SRC))
 
 
 $(TARGET) : $(OBJ) 
-	$(CC) $(OBJ) $(CFLAGS) -o $(TARGET)
+	$(CC) $(OBJ) $(CFLAGS) $(DEFINE) -o $(TARGET)
 
 
 $(PREF_OBJ)%.o : $(PREF_SRC)%.cpp

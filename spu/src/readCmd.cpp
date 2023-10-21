@@ -1,29 +1,32 @@
 #include "readCmd.h"
 
-const char* input_file = "../bytebinarycode";
+const char* input_file = "../binary";
 
-void CreateBuffer(Text* buf)
+void CreateBuffer(Text* cmd)
 {
-    buf->sizebuf = Get_Size_File();
+    cmd->sizebuf = Get_Size_File();
+
+    cmd->position = 0;
     
-    buf->buffer = (char*) calloc(buf->sizebuf, sizeof(char));
+    cmd->buffer = (char*) calloc(cmd->sizebuf, sizeof(char));
     
-    Read_Binary_File(buf);
+    Read_Binary_File(cmd);
 }
-void DeleteBuffer(Text* buf)
+
+void DeleteBuffer(Text* cmd)
 {
-    free(buf->buffer - buf->sizebuf + 1);
-    buf->sizebuf = INT_MAX;
+    free(cmd->buffer);
+    cmd->sizebuf = INT_MAX;
 }
-void Read_Binary_File(Text* buf)
+
+void Read_Binary_File(Text* cmd)
 {
     FILE* fname = fopen(input_file, "r");
 
-    fread(buf->buffer, sizeof(char), buf->sizebuf, fname);
+    fread(cmd->buffer, sizeof(char), cmd->sizebuf, fname);
     
     fclose(fname);
 }
-
 
 size_t Get_Size_File()
 {
@@ -31,4 +34,3 @@ size_t Get_Size_File()
     stat(input_file, &buff);
     return (size_t) (buff.st_size);
 }
-
