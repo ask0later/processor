@@ -1,13 +1,15 @@
 #include "processor.h"
 
 
-int Processor(Stack* stk, Text* cmd)
+int Processor(Stack* stk, Stack* adress, Text* cmd)
 {
     FILE* fp = fopen("stack.txt", "a");
 
-    while (cmd->position != cmd->sizebuf - 1)
+    while (cmd->position != cmd->sizebuf)
     {
-        ExequteCommand(stk, cmd, cmd->buffer);
+        if (cmd->buffer[cmd->position] == HTL)
+            return 0;
+        ExequteCommand(stk, adress, cmd);
         
         PrintStackData(stk, fp);
     }
@@ -16,37 +18,33 @@ int Processor(Stack* stk, Text* cmd)
     return 0;
 }
 
-void ExequteCommand(Stack* stk, Text* cmd, char* buffer_start)
+void ExequteCommand(Stack* stk, Stack* adress, Text* cmd)
 {
-    // printf("position -- %d\n",  cmd->position);
-    // printf("command -- %d\n\n", cmd->buffer[cmd->position]);
     int argument = 0, value1 = 0, value2 = 0, value3 = 0;
-    
-    // cmd->buffer[cmd->position] & COMMAND_MASK
-    switch(cmd->buffer[cmd->position])
+
+    switch((cmd->buffer[cmd->position]) & COMMAND_MASK)
     {
-        // case PUSH:
-        case (NUM_BIT | PUSH):
+        case (PUSH):
             cmd->position++;
-            memcpy(&argument, (int*)(cmd->buffer + cmd->position), sizeof(int));
-            cmd->position += sizeof(int);
+            if (cmd->buffer[cmd->position - 1] & NUM_BIT)
+            {
+                memcpy(&argument, (int*)(cmd->buffer + cmd->position), sizeof(int));
+                cmd->position += sizeof(int);
+            }
+            else if (cmd->buffer[cmd->position - 1] & REG_BIT)
+            {
+                argument = stk->reg[(size_t) cmd->buffer[cmd->position] - 1];
+                cmd->position += sizeof(char);
+            }
+            
             StackPush(argument, stk);
-
             break;
-        case (REG_BIT | PUSH):
-            cmd->position++;
-            argument = stk->reg[(size_t) cmd->buffer[cmd->position] - 1];
-            cmd->position++;
-
-            StackPush(argument, stk);
-
-            break;
-        case (REG_BIT | POP):
+        case POP:
             cmd->position++;
             argument = StackPop(stk);
 
             stk->reg[(size_t) cmd->buffer[cmd->position] - 1] = argument;
-            cmd->position++;
+            cmd->position += sizeof(char);
 
             break;
         case ADD:
@@ -100,92 +98,106 @@ void ExequteCommand(Stack* stk, Text* cmd, char* buffer_start)
             StackPush(argument, stk);
 
             break;
-        case (LAB_BIT | JA):
+        case JA:
             value1 = StackPop(stk);
             value2 = StackPop(stk);
             if (value2 > value1)
-                {
-                    memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
-                    value3 = (int) cmd->position;
-                    cmd->position = (size_t)(value3 - argument);
-                }
+            {
+                memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
+                value3 = (int) cmd->position;
+                cmd->position = (size_t)(value3 - argument);
+            }
             else
-                cmd->position += sizeof(int) + 1;
+                cmd->position += sizeof(int) + sizeof(char);
 
             break;
-        case (LAB_BIT | JAE):
+        case JAE:
             value1 = StackPop(stk);
             value2 = StackPop(stk);
             if (value2 >= value1)
-                {
-                    memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
-                    value3 = (int) cmd->position;
-                    cmd->position = (size_t)(value3 - argument);
-                }
+            {
+                memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
+                value3 = (int) cmd->position;
+                cmd->position = (size_t)(value3 - argument);
+            }
             else
-                cmd->position += sizeof(int) + 1;
+                cmd->position += sizeof(int) + sizeof(char);
 
             break;
-        case (LAB_BIT | JB):
+        case JB:
             value1 = StackPop(stk);
             value2 = StackPop(stk);
             if (value2 < value1)
-                {
-                    memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
-                    value3 = (int) cmd->position;
-                    cmd->position = (size_t)(value3 - argument);
-                }
+            {
+                memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
+                value3 = (int) cmd->position;
+                cmd->position = (size_t)(value3 - argument);
+            }
             else
-                cmd->position += sizeof(int) + 1;
+                cmd->position += sizeof(int) + sizeof(char);
 
             break;
-        case (LAB_BIT | JBE):
+        case JBE:
             value1 = StackPop(stk);
             value2 = StackPop(stk);
             if (value2 <= value1)
-                {
-                    memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
-                    value3 = (int) cmd->position;
-                    cmd->position = (size_t)(value3 - argument);
-                }
+            {
+                memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
+                value3 = (int) cmd->position;
+                cmd->position = (size_t)(value3 - argument);
+            }
             else
-                cmd->position += sizeof(int) + 1;
+                cmd->position += sizeof(int) + sizeof(char);
             
             break;
-        case (LAB_BIT | JE):
+        case JE:
             value1 = StackPop(stk);
             value2 = StackPop(stk);
             if (value2 == value1)
-                {
-                    memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
-                    value3 = (int) cmd->position;
-                    cmd->position = (size_t)(value3 - argument);
-                }
+            {
+                memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
+                value3 = (int) cmd->position;
+                cmd->position = (size_t)(value3 - argument);
+            }
             else
-                cmd->position += sizeof(int) + 1;
+                cmd->position += sizeof(int) + sizeof(char);
             
             break;
-        case (LAB_BIT | JNE):
+        case JNE:
             value1 = StackPop(stk);
             value2 = StackPop(stk);
             if (value2 != value1)
-                {
-                    memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
-                    value3 = (int) cmd->position;
-                    cmd->position = (size_t)(value3 - argument);
-                }
+            {
+                memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
+                value3 = (int) cmd->position;
+                cmd->position = (size_t)(value3 - argument);
+            }
             else
-                cmd->position += sizeof(int) + 1;
+                cmd->position += sizeof(int) + sizeof(char);
             
             break;
-        case (LAB_BIT | JMP):
+        case JMP:
             memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
             value3 = (int) cmd->position;
             cmd->position = (size_t)(value3 - argument);
             
             break;
-        case (LAB_BIT | JM):
+        case JM:
             
+            break;
+        case CALL:
+            memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
+            value3 = (int) cmd->position;
+            value1 = cmd->position + sizeof(char) + sizeof(int);
+            
+            StackPush(value1, adress);
+            cmd->position = (size_t)(value3 - argument);
+            break;
+        
+        case (RET):
+            value1 = StackPop(adress);
+            
+            cmd->position = (size_t) value1;
             break;
         case OUT:
             cmd->position++;
@@ -194,7 +206,7 @@ void ExequteCommand(Stack* stk, Text* cmd, char* buffer_start)
 
             break;
         case HTL:
-            cmd->position++;
+
             return;
         default:
             cmd->position++;

@@ -9,14 +9,16 @@
 
 int const MAX_SIZE_COMMAND = 15;
 
-const unsigned char NUM_BIT = 32;
-const unsigned char REG_BIT = 64;
-const char LAB_BIT = 128;
+const unsigned char COMMAND_MASK =  31;
 
-const int valuecmd[] = {PUSH, POP, ADD, SUB, MUL, DIV, SQRT, SIN, COS, IN, JA, JAE, JB, JBE, JE, JNE, JMP, JM, OUT, HTL};
+const unsigned char NUM_BIT      =  32;
+const unsigned char REG_BIT      =  64;
+const char          LAB_BIT      = 128;
 
-int    Processor(Stack* stk, Text* cmd);
+const int valuecmd[] = {PUSH, POP, ADD, SUB, MUL, DIV, SQRT, SIN, COS, IN, JA, JAE, JB, JBE, JE, JNE, JMP, JM, CALL, RET, OUT, HTL};
 
-void ExequteCommand(Stack* stk, Text* cmd, char* buffer_start); 
+int       Processor(Stack* stk, Stack* adress, Text* cmd);
+
+void ExequteCommand(Stack* stk, Stack* adress, Text* cmd);
 
 #endif

@@ -4,14 +4,19 @@
 
 int main()
 {
-    struct Text  cmd = {};
-    struct Stack stk = {};
+    struct Text  cmd    = {};
+    struct Stack stk    = {};
+    struct Stack adress = {};
+
+    
 
     CreateBuffer(&cmd);
     StackCtor(&stk);
+    StackCtor(&adress);
 
-    Processor(&stk, &cmd);
+    Processor(&stk, &adress, &cmd);
 
+    StackDtor(&adress);
     StackDtor(&stk);
     DeleteBuffer(&cmd);
 }

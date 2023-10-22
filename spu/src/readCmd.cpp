@@ -32,5 +32,5 @@ size_t Get_Size_File()
 {
     struct stat buff = {};
     stat(input_file, &buff);
-    return (size_t) (buff.st_size);
+    return (size_t) (buff.st_size + 1);
 }
