@@ -23,7 +23,7 @@ struct Text
     size_t         position;
 
     char*        binarycode;
-    int  binary_position;
+    int     binary_position;
 };
 
 struct Command

@@ -22,7 +22,8 @@ const struct OneCommand cmds[] = {{"push",  TWO_ARGUMENTS,   PUSH}, {"pop", ONE_
                                    {"sqrt", NO_ARGUMENTS,    SQRT}, {"sin", NO_ARGUMENTS,    SIN}, {"cos", NO_ARGUMENTS,    COS},
                                    {"in",   NO_ARGUMENTS,      IN}, {"ja",  LABEL_ARGUMENTS,  JA}, {"jae", LABEL_ARGUMENTS, JAE}, 
                                    {"jb",   LABEL_ARGUMENTS,   JB}, {"jbe", LABEL_ARGUMENTS, JBE}, {"je",  LABEL_ARGUMENTS,  JE},
-                                   {"jne",  LABEL_ARGUMENTS,  JNE}, {"jmp", LABEL_ARGUMENTS, JMP}, {"jm",  LABEL_ARGUMENTS,  JM}, 
+                                   {"jne",  LABEL_ARGUMENTS,  JNE}, {"jmp", LABEL_ARGUMENTS, JMP}, {"jm",  LABEL_ARGUMENTS,  JM},
+                                   {"call", LABEL_ARGUMENTS, CALL}, {"ret", NO_ARGUMENTS,    RET}, 
                                    {"out",  NO_ARGUMENTS,     OUT}, {"htl", NO_ARGUMENTS,    HTL}};
 
 const char* const         reg[] = {"rax", "rbx", "rcx"};

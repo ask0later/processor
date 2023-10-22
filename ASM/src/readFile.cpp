@@ -55,7 +55,7 @@ size_t Get_Size_File(const char* input_file)
     struct stat    buff;
     stat(input_file, &buff);
     
-    return (size_t) (buff.st_size);
+    return (size_t) (buff.st_size + 1);
 }
 
 size_t Get_Num_Line(Text* buf)

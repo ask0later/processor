@@ -50,14 +50,8 @@ size_t ParseInstruction(Text* buf, Command* cmd, Label* Labels)
     assert(Labels);
 
     sscanf(buf->buffer + buf->position, "%s", cmd->command_name);
-    // printf("POSITION %d\n", buf->position);
-    // printf("что считалось = %s\n", cmd->command_name);
-    //printf("+%lu\n", strlen(cmd->command_name));
-
     // strtok()
-    //printf("символ = <%c> \n", buf->buffer[buf->position]);
     buf->position += strlen(cmd->command_name);
-    //printf("символ = <%c> \n", buf->buffer[buf->position]);
 
     return ParseOperand(buf, cmd, Labels);
 }
@@ -94,37 +88,24 @@ size_t ParseDefineLabel(Text* buf, Command* cmd, Label* Labels)
     assert(cmd);
     assert(buf);
     
-    //printf("до %d\n", buf->position);
-    //printf("куда надо налево%lu\n",strlen(cmd->command_name));
-    
     buf->position = buf->position - strlen(cmd->command_name);
     
-    //printf("после %d\n", buf->position);
-    
     char string[SIZE_ARGUMENT] = {};
-    
-    //sscanf(buf->buffer + buf->position, "%s", string);
 
     if (cmd->command_name[strlen(cmd->command_name) - 1] == ':')
     {
         memcpy(string, cmd->command_name, strlen(cmd->command_name) - 1);
-        //printf("string <%s>\n", string);
+
         int result = CompareNameLabels(string, Labels);
         if (result == -1)
         {
-            memcpy(Labels[cmd->numberlabelcmd].name, string, strlen(string)/*+1*/);
+            memcpy(Labels[cmd->numberlabelcmd].name, string, strlen(string));
             Labels[cmd->numberlabelcmd].value_ptr = buf->binary_position; 
-            //printf("Labels[%d].value_ptr = %d \n", cmd->numberlabelcmd, Labels[cmd->numberlabelcmd].value_ptr);
+
             cmd->numberlabelcmd++;
         }
         else
-        {
             Labels[result].value_ptr = buf->binary_position;
-            //printf("Labels[%d].value_ptr = %d \n", result, Labels[result].value_ptr);
-        }
-        
-        // Labels[cmd->numberlabelcmd].value_ptr = (int) buf->binary_position; 
-        // cmd->numberlabelcmd++;
     }
     
     buf->position += strlen(cmd->command_name);
@@ -149,15 +130,11 @@ size_t ParseLabelArgument(Text* buf, Command* cmd, Label* Labels)
     if (result == -1)
     {
         memcpy(Labels[cmd->numberlabelcmd].name, string, strlen(string) + 1);
-        //printf("Labels[%d].name = %s \n", cmd->numberlabelcmd, Labels[cmd->numberlabelcmd].name);
-        //Labels[cmd->numberlabelcmd].value_ptr = result; 
         cmd->value = result;
         cmd->numberlabelcmd++;
     }
     else
-    {
         cmd->value = Labels[result].value_ptr;
-    }
 
     buf->position += strlen(string);
 
@@ -170,9 +147,8 @@ size_t ParseValueArgument(Text* buf, Command* cmd)
 {
     assert(cmd);
     assert(buf);
-    //printf("символ = <%c> \n", buf->buffer[buf->position]);
+
     sscanf(&buf->buffer[buf->position], "%d", &cmd->value);
-    //printf("число = <%d>\n", cmd->value);
 
     if (sscanf(buf->buffer + buf->position, "%d", &cmd->value) == 1)
     {
@@ -180,7 +156,6 @@ size_t ParseValueArgument(Text* buf, Command* cmd)
 
         char length[SIZE_ARGUMENT] = {};
         sscanf(buf->buffer + buf->position, "%s", length);
-        //printf("+%lu\n", strlen(length));
 
         buf->position += strlen(length);        
     }
@@ -218,7 +193,6 @@ size_t ParseNumberArgument(Text* buf, Command* cmd)
     }
     return buf->position;
 }
-
 
 void PrintNumberCommands(Command* cmd, Label* Labels)
 {
@@ -284,38 +258,37 @@ void EmitInstrctionBinary(Command* cmd, Text* buf, Label* Labels)
     assert(buf);
     assert(Labels);
 
-    //printf("COUNTER LABELS = %d\n", cmd->numberlabelcmd);
-
     if (cmd->code == (char) MAX_IN_BYTE)
         return;
 
-    //printf("БЛЯТЬ СУКА НАХУЙ\n");
     cmd->numberlabelcmd--;
-    //printf("COUNTER LABELS_____ = %d\n", cmd->numberlabelcmd);
 
     buf->binarycode[buf->binary_position] = cmd->code;
-    (buf->binary_position)++;
+    
         
     if (cmd->code & NUM_BIT)
     {
+        (buf->binary_position)++;
         memcpy(buf->binarycode + buf->binary_position, &cmd->value, sizeof(cmd->value));
         buf->binary_position += (int) sizeof(int);
     }
     else if (cmd->code & REG_BIT)
     {
+        (buf->binary_position)++;
         buf->binarycode[buf->binary_position] = (char) WriteArrayRegister(cmd);
         (buf->binary_position)++;
     }
     else if (cmd->code & LAB_BIT)
     {
-        //printf("COUNTER LABELS = %d\n", cmd->numberlabelcmd);
-        //printf("||%d|| ----- ||%d||\n", (int) buf->binary_position,cmd->value);// Labels[cmd->numberlabelcmd].value_ptr);
-
-
-        int offset = buf->binary_position - cmd->value;  //Labels[cmd->numberlabelcmd].value_ptr; 
-        //printf("||||%d||||\n", offset);
+        int offset = buf->binary_position - cmd->value;
+        
+        (buf->binary_position)++;
         memcpy(buf->binarycode + buf->binary_position, &offset, sizeof(int));
         buf->binary_position += (int) sizeof(int);
+    }
+    else
+    {
+        (buf->binary_position)++;
     }
     cmd->numberlabelcmd++;
 }
