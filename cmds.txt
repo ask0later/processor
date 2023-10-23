@@ -1,15 +1,14 @@
-push 20
-pop rax
-NEXT:
-push rax
-push rax
-mul
-out
-push rax
 push 1
-add
-pop rax
-push rax
-push 10
-jb NEXT
+push 2
+call foo 
+push 3
+push 4
+add 
+out
 htl
+foo:
+push 69
+push 0
+add 
+out
+ret

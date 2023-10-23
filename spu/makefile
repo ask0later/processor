@@ -1,4 +1,4 @@
-TARGET = SPU
+TARGET = spu
 CC = g++
 DEFINE = 
 

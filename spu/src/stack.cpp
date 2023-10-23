@@ -65,9 +65,13 @@ void StackPush(int value, Stack* stk/*, const int line, const char* file*/)
         {
             Re_Calloc(1, stk);
         }
-
+        
         *(stk->sequence + stk->size) = value;
 
+        // printf("size stack = %d\n", stk->size);
+        // printf("value = %d\n", value);
+        // printf("stk->sequence[0] = %d\n", stk->sequence[0]);
+        // printf("stk->sequence[1] = %d\n", stk->sequence[1]);
         (stk->size)++;
 
     #ifdef HASH_VERIFICATION
@@ -95,6 +99,10 @@ elem_t StackPop(Stack* stk/*, const int line, const char* file*/)
         (stk->size)--;
         int value = *(stk->sequence + stk->size);
         *(stk->sequence + stk->size) = 0;
+        // printf("size stack = %d\n", stk->size);
+        // printf("value = %d\n", value);
+        // printf("stk->sequence[0] = %d\n", stk->sequence[0]);
+        // printf("stk->sequence[1] = %d\n", stk->sequence[1]);
 
     #ifdef HASH_VERIFICATION
         StackRehash(stk);

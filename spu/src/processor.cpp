@@ -1,7 +1,7 @@
 #include "processor.h"
 
 
-int Processor(Stack* stk, Stack* adress, Text* cmd)
+int Processor(Stack* stk, Stack* adress, Text* cmd, int* RAM)
 {
     FILE* fp = fopen("stack.txt", "a");
 
@@ -9,7 +9,8 @@ int Processor(Stack* stk, Stack* adress, Text* cmd)
     {
         if (cmd->buffer[cmd->position] == HTL)
             return 0;
-        ExequteCommand(stk, adress, cmd);
+        
+        ExequteCommand(stk, adress, cmd, RAM);
         
         PrintStackData(stk, fp);
     }
@@ -18,13 +19,14 @@ int Processor(Stack* stk, Stack* adress, Text* cmd)
     return 0;
 }
 
-void ExequteCommand(Stack* stk, Stack* adress, Text* cmd)
+void ExequteCommand(Stack* stk, Stack* adress, Text* cmd, int* RAM)
 {
     int argument = 0, value1 = 0, value2 = 0, value3 = 0;
 
+    printf("position = %d; command = %d\n", cmd->position, cmd->buffer[cmd->position]);
     switch((cmd->buffer[cmd->position]) & COMMAND_MASK)
     {
-        case (PUSH):
+        case PUSH:
             cmd->position++;
             if (cmd->buffer[cmd->position - 1] & NUM_BIT)
             {
@@ -36,15 +38,37 @@ void ExequteCommand(Stack* stk, Stack* adress, Text* cmd)
                 argument = stk->reg[(size_t) cmd->buffer[cmd->position] - 1];
                 cmd->position += sizeof(char);
             }
-            
+
+            if (cmd->buffer[cmd->position - 1] & RAM_BIT)
+                value1 = RAM[argument];
+            else
+                value1 = argument;
+
             StackPush(argument, stk);
+
             break;
         case POP:
             cmd->position++;
-            argument = StackPop(stk);
+            value1 = StackPop(stk);
 
-            stk->reg[(size_t) cmd->buffer[cmd->position] - 1] = argument;
-            cmd->position += sizeof(char);
+            if (cmd->buffer[cmd->position - 1] & NUM_BIT)
+            {
+                memcpy(&argument, (int*)(cmd->buffer + cmd->position), sizeof(int));
+                cmd->position += sizeof(int);
+                printf("_____%d\n", argument);
+                RAM[argument] = value1;
+            }
+            else if (cmd->buffer[cmd->position - 1] & (REG_BIT + RAM_BIT))
+            {
+                argument = stk->reg[(size_t) cmd->buffer[cmd->position] - 1];
+                cmd->position += sizeof(char);
+                RAM[argument] = value1;
+            }
+            else
+            {
+                stk->reg[(size_t) cmd->buffer[cmd->position] - 1] = argument;
+                cmd->position += sizeof(char);
+            }
 
             break;
         case ADD:

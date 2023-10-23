@@ -61,7 +61,7 @@ enum Error
 #endif
 };
 
-const int MIN_CAPACITY = 3;
+const int MIN_CAPACITY = 6;
 
 int  StackCtor(Stack* stk);
 void StackDtor(Stack* stk);

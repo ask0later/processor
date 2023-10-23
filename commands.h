@@ -12,8 +12,9 @@ enum Commands
     IN   = 10,
     JA   = 11, JAE  = 12, JB   = 13,
     JBE  = 14, JE   = 15, JNE  = 16,
-    JMP  = 17, JM   = 18, LAB  = 19,
-    OUT  = 20, HTL  = 21
+    JMP  = 17, JM   = 18,
+    CALL = 19, RET  = 20, 
+    OUT  = 21, HTL  = 22
 };
 
 
