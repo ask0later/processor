@@ -1,42 +1,29 @@
-call MAIN
-htl
-MAIN:
-push 1
+push 10
 push 2
-push 1
-pop rcx
-pop rbx
-pop rax
-call DISCR
-push [5]
+div
 sqrt
-pop [6]
-push rbx
-push [6]
+pop rcx
+push -1
+pop rax
+push -1
+pop rbx
+LOOP_J:
+push rax
+push 1
 add
-push 2
-div
-push rax
-div
-out
+pop rax
+LOOP_I:
 push rbx
-push [6]
-sub
-push 2
-div
+push 1
+add
+pop rbx
+push 25
+push 5
+push r
+
+
+
 push rax
-div
-out
-ret
-DISCR:
+mul
 push rbx
-push rbx
-mul
-push 4
-push rax
-push rcx
-mul
-mul
-sub
-pop [5]
-ret
+add

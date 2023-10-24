@@ -15,6 +15,8 @@ int main()
     
     Processor(&stk, &adress, &cmd, RAM);
 
+    OutputCyrcle(RAM);
+
     StackDtor(&adress);
     StackDtor(&stk);
     DeleteBuffer(&cmd);

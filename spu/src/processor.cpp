@@ -66,6 +66,7 @@ void ExequteCommand(Stack* stk, Stack* adress, Text* cmd, int* RAM)
             {
                 argument = stk->reg[(size_t) cmd->buffer[cmd->position] - 1];
                 cmd->position += sizeof(char);
+                
                 RAM[argument] = value1;
             }
             else
@@ -239,5 +240,20 @@ void ExequteCommand(Stack* stk, Stack* adress, Text* cmd, int* RAM)
         default:
             cmd->position++;
             break;
+    }
+}
+
+
+void OutputCyrcle(int* RAM)
+{
+    assert(RAM);
+
+    for (size_t j = 0; j < 10; j++)
+    {
+        for (size_t i = 0; i < 10; i++)
+        {
+            printf("%d", RAM[10 * j + i]);
+        }
+    printf("\n");
     }
 }
