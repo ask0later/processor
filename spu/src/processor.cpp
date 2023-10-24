@@ -23,7 +23,6 @@ void ExequteCommand(Stack* stk, Stack* adress, Text* cmd, int* RAM)
 {
     int argument = 0, value1 = 0, value2 = 0, value3 = 0;
 
-    printf("position = %d; command = %d\n", cmd->position, cmd->buffer[cmd->position]);
     switch((cmd->buffer[cmd->position]) & COMMAND_MASK)
     {
         case PUSH:
@@ -31,34 +30,39 @@ void ExequteCommand(Stack* stk, Stack* adress, Text* cmd, int* RAM)
             if (cmd->buffer[cmd->position - 1] & NUM_BIT)
             {
                 memcpy(&argument, (int*)(cmd->buffer + cmd->position), sizeof(int));
-                cmd->position += sizeof(int);
             }
             else if (cmd->buffer[cmd->position - 1] & REG_BIT)
             {
-                argument = stk->reg[(size_t) cmd->buffer[cmd->position] - 1];
-                cmd->position += sizeof(char);
+                argument = stk->reg[(size_t) cmd->buffer[cmd->position] - 1];    
             }
-
             if (cmd->buffer[cmd->position - 1] & RAM_BIT)
+            {
                 value1 = RAM[argument];
+            }
             else
+            {
                 value1 = argument;
+            }
+            if (cmd->buffer[cmd->position - 1] & NUM_BIT)
+                cmd->position += sizeof(int);
+            else
+                cmd->position += sizeof(char);
 
-            StackPush(argument, stk);
+            StackPush(value1, stk);
 
             break;
         case POP:
             cmd->position++;
             value1 = StackPop(stk);
+            
 
             if (cmd->buffer[cmd->position - 1] & NUM_BIT)
             {
                 memcpy(&argument, (int*)(cmd->buffer + cmd->position), sizeof(int));
                 cmd->position += sizeof(int);
-                printf("_____%d\n", argument);
                 RAM[argument] = value1;
             }
-            else if (cmd->buffer[cmd->position - 1] & (REG_BIT + RAM_BIT))
+            else if (cmd->buffer[cmd->position - 1] & RAM_BIT)
             {
                 argument = stk->reg[(size_t) cmd->buffer[cmd->position] - 1];
                 cmd->position += sizeof(char);
@@ -66,7 +70,7 @@ void ExequteCommand(Stack* stk, Stack* adress, Text* cmd, int* RAM)
             }
             else
             {
-                stk->reg[(size_t) cmd->buffer[cmd->position] - 1] = argument;
+                stk->reg[(size_t) cmd->buffer[cmd->position] - 1] = value1;
                 cmd->position += sizeof(char);
             }
 
@@ -212,7 +216,7 @@ void ExequteCommand(Stack* stk, Stack* adress, Text* cmd, int* RAM)
         case CALL:
             memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
             value3 = (int) cmd->position;
-            value1 = cmd->position + sizeof(char) + sizeof(int);
+            value1 = (int) (cmd->position + sizeof(char) + sizeof(int));
             
             StackPush(value1, adress);
             cmd->position = (size_t)(value3 - argument);

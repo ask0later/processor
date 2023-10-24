@@ -134,7 +134,7 @@ void Re_Calloc(bool more_or_less, Stack* stk)
     *(valera_t*) ptr = 0xBAADF00D;
     *(valera_t*) (ptr + sizeof(valera_t) + (long unsigned) stk->capacity * sizeof(int)) = 0xBAADF00D;
 #else
-    stk->sequence = (elem_t*) realloc(stk->sequence, stk->capacity * sizeof(int));
+    stk->sequence = (elem_t*) realloc(stk->sequence, (size_t) stk->capacity * sizeof(int));
 #endif
 
     if (more_or_less == 1)
@@ -228,8 +228,7 @@ void Verify(Stack* stk, int errors/*, const char* func, const int line, const ch
     for(size_t counter = 0; counter < NUM_ERRORS; counter++)
     {
         if (counter != 0)
-            error_bit <<= 1;  
-        //      
+            error_bit <<= 1;     
         if (errors & error_bit)
             DumpErrors(error_bit);
     }

@@ -9,17 +9,15 @@ void Assembler(Text* buf, Command* cmd, Label* Labels)
 {
     assert(buf);
     assert(cmd);
-    
+        
     // char* ptr_line = buf->buffer;
 
     // char* ptr_binary = buf->binarycode;
 
-    for (size_t counterptr = 0; counterptr < buf->nlines; counterptr++)
+    for (size_t counterptr = 0; counterptr < buf->nlines + 1; counterptr++)
     {
-        //printf("%d\n", counterptr);
         buf->position = ParseInstruction(buf, cmd, Labels) + 1;
 
-        //PrintNumberCommands(cmd, Labels);
         EmitInstrctionBinary(cmd, buf, Labels);
 
         cmd->code   = (char) MAX_IN_BYTE;
@@ -67,9 +65,6 @@ size_t ParseOperand(Text* buf, Command* cmd, Label* Labels)
         {
             cmd->code = (char) (cmds[counter].valueName);
 
-            // printf("COMMAND = %d \n", cmd->code);
-            // printf("name =  %s\n\n", cmd->command_name);
-            
             if (cmds[counter].argument_type == STACK_ARGUMENTS)
                 return  ParseValueArgument(buf, cmd);
             // else if (cmds[counter].argument_type == ONE_ARGUMENTS)
@@ -143,8 +138,6 @@ size_t ParseValueArgument(Text* buf, Command* cmd)
 {
     assert(cmd);
     assert(buf);
-
-    sscanf(&buf->buffer[buf->position], "%d", &cmd->value);
 
     if (sscanf(buf->buffer + buf->position, "%d", &cmd->value) == 1)
     {

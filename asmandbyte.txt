@@ -111,7 +111,7 @@ call FIBO
 push rbx
 out
 push rcx
-push 1523
+push 15
 jb LOOP
 htl
 FIBO:

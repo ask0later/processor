@@ -36,7 +36,7 @@ const unsigned char RAM_BIT = 128;
 
 
 
-const char BIT = 2;
+const char BIT        = 2;
 const size_t SIZEBYTE = 8;
 
 
