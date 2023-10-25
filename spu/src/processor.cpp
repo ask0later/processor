@@ -23,6 +23,7 @@ void ExequteCommand(Stack* stk, Stack* adress, Text* cmd, int* RAM)
 {
     int argument = 0, value1 = 0, value2 = 0, value3 = 0;
 
+    printf("COMMAND = %d\n", (cmd->buffer[cmd->position]));
     switch((cmd->buffer[cmd->position]) & COMMAND_MASK)
     {
         case PUSH:
@@ -223,7 +224,7 @@ void ExequteCommand(Stack* stk, Stack* adress, Text* cmd, int* RAM)
             cmd->position = (size_t)(value3 - argument);
             break;
         
-        case (RET):
+        case RET:
             value1 = StackPop(adress);
             
             cmd->position = (size_t) value1;
@@ -248,11 +249,11 @@ void OutputCyrcle(int* RAM)
 {
     assert(RAM);
 
-    for (size_t j = 0; j < 10; j++)
+    for (size_t j = 0; j < 11; j++)
     {
-        for (size_t i = 0; i < 10; i++)
+        for (size_t i = 0; i < 11; i++)
         {
-            printf("%d", RAM[10 * j + i]);
+            printf("%d", RAM[11 * j + i]);
         }
     printf("\n");
     }

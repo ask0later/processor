@@ -8,7 +8,7 @@
 #include "readCmd.h"
 
 
-const size_t SIZE_RAM = 100;
+const size_t SIZE_RAM = 121;
 const int MAX_SIZE_COMMAND = 15;
 
 const unsigned char COMMAND_MASK =  31;
