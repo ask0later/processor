@@ -9,11 +9,15 @@
 #include <assert.h>
 #include <climits>
 
-#include "../../commands.h"
+#include "../../enum.h"
 
 const unsigned char MAX_IN_BYTE   = 255;
 const size_t        NUM_LABELS    =  10;
 const size_t        SIZE_ARGUMENT =  10;
+const size_t     MAX_SIZE_REGISTR =   5;
+const size_t     MAX_SIZE_COMMAND =  10;
+const size_t     MAX_SIZE_LABEL   =  10;
+const size_t     SIZEBINARY       = 255;
 
 struct Text
 {
@@ -49,10 +53,10 @@ struct Label
 };
 
 void  CreateBuffer(Text* buf, Command* cmd, const char*  input_file);
-void  DeleteBuffer(Text* buf, Command* cmd);
-void Read_Commands(Text* buf, const char*  input_file);
+void  DeleteBuffer(Text* buf, Command* cmd                         );
+void Read_Commands(Text* buf,               const char*  input_file);
 
-size_t Get_Size_File(const char*  input_file);
-size_t Get_Num_Line(Text* buf);
+size_t                        Get_Size_File(const char*  input_file);
+size_t                         Get_Num_Line(Text* buf              );
 
 #endif

@@ -1,7 +1,5 @@
 #include "asm.h"
 
-
-
 const char* BYTEcode       = "../BYTEcodefile.txt";
 
 
@@ -10,10 +8,6 @@ void Assembler(Text* buf, Command* cmd, Label* Labels)
     assert(buf);
     assert(cmd);
         
-    // char* ptr_line = buf->buffer;
-
-    // char* ptr_binary = buf->binarycode;
-
     for (size_t counterptr = 0; counterptr < buf->nlines + 1; counterptr++)
     {
         buf->position = ParseInstruction(buf, cmd, Labels) + 1;
@@ -23,7 +17,6 @@ void Assembler(Text* buf, Command* cmd, Label* Labels)
         cmd->code   = (char) MAX_IN_BYTE;
         cmd->value  =            INT_MAX;
     }
-    
 }
 
 void OutputBinary(Text* buf, const char* output_file)
@@ -67,8 +60,6 @@ size_t ParseOperand(Text* buf, Command* cmd, Label* Labels)
 
             if (cmds[counter].argument_type == STACK_ARGUMENTS)
                 return  ParseValueArgument(buf, cmd);
-            // else if (cmds[counter].argument_type == ONE_ARGUMENTS)
-            //     return ParseNumberArgument(buf, cmd);
             else if (cmds[counter].argument_type == LABEL_ARGUMENTS)
                 return  ParseLabelArgument(buf, cmd, Labels);
             else
@@ -228,7 +219,7 @@ void PrintNumberCommands(Command* cmd, Label* Labels)
     {
         fprintf(fp," %lu\n", WriteArrayRegister(cmd));            
     }
-    else if (cmd->code  /*& LAB_BIT*/)
+    else if (cmd->code)
     {
         if (cmd->value != INT_MAX)
             fprintf(fp, " %d\n", cmd->value);

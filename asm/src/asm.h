@@ -4,11 +4,7 @@
 #include <math.h>
 
 #include "readFile.h"
-#include "../../commands.h"
-const int     DEFINE_LABEL = 4;
-const int  LABEL_ARGUMENTS = 3;
-const int  STACK_ARGUMENTS = 2;
-const int     NO_ARGUMENTS = 0;
+#include "../../enum.h"
 
 const struct OneCommand cmds[] = {{"push", STACK_ARGUMENTS, PUSH}, {"pop", STACK_ARGUMENTS,  POP}, {"add", NO_ARGUMENTS,    ADD},
                                   {"sub" , NO_ARGUMENTS,     SUB}, {"mul", NO_ARGUMENTS,     MUL}, {"div", NO_ARGUMENTS,    DIV},
@@ -27,35 +23,26 @@ const char RCX = 3;
 
 const size_t SPACE = 1;
 
-const unsigned char NUM_BIT =  32;
-const unsigned char REG_BIT =  64;
-const unsigned char RAM_BIT = 128;
 
-
-
-
-
-
-const char BIT        = 2;
+const char   BIT      = 2;
 const size_t SIZEBYTE = 8;
 
 
 void                 Assembler(Text* buf, Command* cmd, Label* Labels);
 
-size_t                    ParseInstruction(Text* buf, Command* cmd, Label* Labels); //cringe  
-size_t                        ParseOperand(Text* buf, Command* cmd, Label* Labels);
-size_t                 ParseNumberArgument(Text* buf, Command* cmd);
-size_t                  ParseValueArgument(Text* buf, Command* cmd);
-size_t                  ParseLabelArgument(Text* buf, Command* cmd, Label* Labels);
-size_t                    ParseDefineLabel(Text* buf, Command* cmd, Label* Labels);
+size_t        ParseInstruction(Text* buf, Command* cmd, Label* Labels);  
+size_t            ParseOperand(Text* buf, Command* cmd, Label* Labels);
+size_t     ParseNumberArgument(Text* buf, Command* cmd               );
+size_t      ParseValueArgument(Text* buf, Command* cmd               );
+size_t      ParseLabelArgument(Text* buf, Command* cmd, Label* Labels);
+size_t        ParseDefineLabel(Text* buf, Command* cmd, Label* Labels);
 
-size_t      WriteArrayRegister(Command* cmd);
-int          CompareNameLabels(char* string, Label* Labels);
+size_t      WriteArrayRegister(Command* cmd                          );
+void      EmitInstrctionBinary(Command* cmd, Text* buf, Label* Labels);
+void       PrintNumberCommands(Command* cmd,            Label* Labels);
+int          CompareNameLabels(char* string,            Label* Labels);
 
-void EmitInstrctionBinary(Command* cmd, Text* buf, Label* Labels);
-void  PrintNumberCommands(Command* cmd,            Label* Labels);
-
-void         OutputBinary(Text* buf, const char* output_file);
+void              OutputBinary(Text* buf, const char* output_file     );
 
 
 

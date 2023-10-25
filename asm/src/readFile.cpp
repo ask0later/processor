@@ -1,13 +1,5 @@
 #include "readFile.h"
 
-const size_t MAX_SIZE_REGISTR =   5;
-const size_t MAX_SIZE_COMMAND =  10;
-const size_t MAX_SIZE_LABEL   =  10;
-const size_t SIZEBINARY       = 255;
-
-
-
-
 void CreateBuffer(Text* buf, Command* cmd, const char*  input_file)
 {
     buf->sizebuf = Get_Size_File(input_file);

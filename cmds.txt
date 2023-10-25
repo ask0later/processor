@@ -1,64 +1,42 @@
 call MAIN
 htl
 MAIN:
-push -1
-pop rax
-push -1
-pop rbx
-LOOP_J:
-push rax
 push 1
-add
-pop rax
-push 100
-out
-push rax
-out
-LOOP_I:
-push rbx
+push 2
 push 1
-add
-push 200
-out
-pop rbx
-push rbx
-out
-push 25
-push 5
-push rax
-sub
-push 5
-push rax
-sub
-mul
-push 5
-push rbx
-sub
-push 5
-push rbx
-sub
-mul
-add
-call RAM
-push rbx
-push 9
-jbe LOOP_I
-push rax
-push 9
-jbe LOOP_J
-ret
-RAM:
-jbe CHECK
-ret
-CHECK:
-push rax
-push 11
-mul
-push rbx
-pop rax
-add
 pop rcx
-push 1
-pop [rcx]
+pop rbx
+pop rax
+call DISCR
+push [5]
+sqrt
+pop [6]
+push rbx
+push [6]
+add
+push 2
+div
+push rax
+div
+out
+push rbx
+push [6]
+sub
+push 2
+div
+push rax
+div
+out
 ret
-
+DISCR:
+push rbx
+push rbx
+mul
+push 4
+push rax
+push rcx
+mul
+mul
+sub
+pop [5]
+ret

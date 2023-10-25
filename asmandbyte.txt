@@ -184,3 +184,69 @@ mul
 sub
 pop [5]
 ret
+
+
+call MAIN
+htl
+MAIN:
+push -1
+pop rax
+push -1
+pop rbx
+LOOP_J:
+push rax
+push 1
+add
+pop rax
+push 100
+out
+push rax
+out
+LOOP_I:
+push rbx
+push 1
+add
+push 200
+out
+pop rbx
+push rbx
+out
+push 25
+push 5
+push rax
+sub
+push 5
+push rax
+sub
+mul
+push 5
+push rbx
+sub
+push 5
+push rbx
+sub
+mul
+add
+call RAM
+push rbx
+push 9
+jbe LOOP_I
+push rax
+push 9
+jbe LOOP_J
+ret
+RAM:
+jbe CHECK
+ret
+CHECK:
+push rax
+push 11
+mul
+push rbx
+pop rax
+add
+pop rcx
+push 1
+pop [rcx]
+ret
+
