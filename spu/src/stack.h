@@ -10,7 +10,7 @@
 //#define STACK_PUSH(value, stk) StackPush(value, stk, __LINE__, __FILE__)
 //#define STACK_POP(stk) StackPop(stk, __LINE__, __FILE__)
 //#define STACK_DUMP(stk) StackDump(stk, errors, func, line, file)
-
+ 
 const int NUM_ERRORS = 14;
 const int NUM_REG    =  3;
 
