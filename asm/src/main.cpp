@@ -2,7 +2,7 @@
 #include "asm.h"
 
 
-int main(int argc, char* argv[])
+int main(const int argc, const char* argv[])
 {
     if (argc == 3)
     {
@@ -12,7 +12,6 @@ int main(int argc, char* argv[])
         struct Text    buf = {};
         struct Command cmd = {};
     
-
         struct Label Labels[NUM_LABELS] = {{"XXX", -1,}, {"XXX", -1,}, {"XXX", -1,},
                                            {"XXX", -1,}, {"XXX", -1,}, {"XXX", -1,}, 
                                            {"XXX", -1,}, {"XXX", -1,}, {"XXX", -1,}, {"XXX", -1,}};
@@ -20,20 +19,27 @@ int main(int argc, char* argv[])
 
         CreateBuffer(&buf, &cmd, input_file);
         
-        Assembler(&buf, &cmd, Labels);
+        int error_code1 = Assembler(&buf, &cmd, Labels);
+        if (DumpErrors(error_code1, &buf, &cmd) != 0)
+        {
+            DeleteBuffer(&buf, &cmd);
+            return 1;
+        }
 
         buf.binary_position = 0;
         buf.position = 0;
-
-        Assembler(&buf, &cmd, Labels);
-
+        buf.nline = 0;
+        int error_code2 = Assembler(&buf, &cmd, Labels);
+        if (DumpErrors(error_code2, &buf, &cmd) != 0)
+        {
+            DeleteBuffer(&buf, &cmd);
+            return 1;
+        }
+        
         OutputBinary(&buf, output_file);
-    
         DeleteBuffer(&buf, &cmd);
         return 0;
     }
-    else
-    {
-        return 1;
-    }
+    
+    return 1;
 }

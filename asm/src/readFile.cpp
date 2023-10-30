@@ -4,6 +4,7 @@ void CreateBuffer(Text* buf, Command* cmd, const char*  input_file)
 {
     buf->sizebuf = Get_Size_File(input_file);
     buf->nlines  = 0;
+    buf->nline   = 0;
     
     buf->buffer     = (char*) calloc(buf->sizebuf, sizeof(char));
     buf->binarycode = (char*) calloc(256,          sizeof(char));
@@ -16,8 +17,9 @@ void CreateBuffer(Text* buf, Command* cmd, const char*  input_file)
     cmd->code           =       0;
     cmd->value          = INT_MAX;
 
-    cmd->command_name = (char*) calloc(MAX_SIZE_COMMAND, sizeof(char));
-    cmd->reg          = (char*) calloc(MAX_SIZE_REGISTR, sizeof(char));
+    cmd->command_name = (char*) calloc(MAX_SIZE_ARGUMENT, sizeof(char));
+    cmd->reg          = (char*) calloc(MAX_SIZE_ARGUMENT, sizeof(char));
+    cmd->argument     = (char*) calloc(MAX_SIZE_ARGUMENT, sizeof(char));
 }
 
 void DeleteBuffer(Text* buf, Command* cmd)
@@ -31,6 +33,7 @@ void DeleteBuffer(Text* buf, Command* cmd)
     free(cmd->command_name);
     free(cmd->reg         );
     free(buf->binarycode  );
+    free(cmd->argument    );
 }
 void Read_Commands(Text* buf, const char* input_file)
 {
