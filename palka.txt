@@ -1,0 +1,28 @@
+push 5
+pop rax
+push 0
+pop rbx
+call MAIN
+draw
+htl
+MAIN:
+LOOP:
+call OPER
+push rbx
+push 1
+add
+pop rbx
+push rbx
+push 10
+jbe LOOP
+ret
+OPER:
+push 11
+push rax
+mul
+push rbx
+add
+pop rcx
+push 1
+pop [rcx]
+ret

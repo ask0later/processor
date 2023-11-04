@@ -1,0 +1,56 @@
+push 0
+pop rax
+push 0
+pop rbx
+call MAIN
+draw
+htl
+MAIN:
+BLOOP:
+push 0
+pop rbx
+ALOOP:
+call OPERRRR
+push rbx
+push 1
+add
+pop rbx
+push rbx
+push 10
+jbe ALOOP
+push rax
+push 1
+add
+pop rax
+push rax
+push 10
+jbe BLOOP
+ret
+OPERRRR:
+push rax
+push 5
+sub
+push rax
+push 5
+sub
+mul
+push rbx
+push 5
+sub
+push rbx
+push 5
+sub
+mul
+add
+push 25
+jae NOTIN
+push 11
+push rax
+mul
+push rbx
+add
+pop rcx
+push 1
+pop [rcx]
+NOTIN:
+ret

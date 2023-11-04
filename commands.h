@@ -1,8 +1,8 @@
 
 
 #define DEF_LABEL_CMD(num, symbol)                                                           \
-            value1 = StackPop(stk);                                                          \
-            value2 = StackPop(stk);                                                          \
+            value1 = StackPop(&(spu->stk));                                                  \
+            value2 = StackPop(&(spu->stk));                                                  \
             if (value2 symbol value1)                                                        \
             {                                                                                \
                 memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));     \
@@ -14,9 +14,9 @@
                 
 
 #define ARIFMETIC_OPERATION(symbol)                                                          \
-            value1 = StackPop(stk);                                                          \
-            value2 = StackPop(stk);                                                          \
-            StackPush(value2 symbol value1, stk);                                            \
+            value1 = StackPop(&(spu->stk));                                                  \
+            value2 = StackPop(&(spu->stk));                                                  \
+            StackPush(value2 symbol value1, &(spu->stk));                                    \
 
 
 
@@ -29,11 +29,11 @@ DEF_CMD("push", PUSH, STACK_ARGUMENTS,
             }
             else if (cmd->buffer[cmd->position - 1] & REG_BIT)
             {
-                argument = stk->reg[(size_t) cmd->buffer[cmd->position] - 1];    
+                argument = spu->reg[(size_t) cmd->buffer[cmd->position] - 1];    
             }
             if (cmd->buffer[cmd->position - 1] & RAM_BIT)
             {
-                value1 = RAM[argument];
+                value1 = spu->RAM[argument];
             }
             else
             {
@@ -44,31 +44,31 @@ DEF_CMD("push", PUSH, STACK_ARGUMENTS,
             else
                 cmd->position += sizeof(char);
 
-            StackPush(value1, stk);
+            StackPush(value1, &(spu->stk));
 }
 )
 
 DEF_CMD("pop", POP, STACK_ARGUMENTS,
 {
             cmd->position++;
-            value1 = StackPop(stk);
+            value1 = StackPop(&(spu->stk));
         
             if (cmd->buffer[cmd->position - 1] & NUM_BIT)
             {
                 memcpy(&argument, (int*)(cmd->buffer + cmd->position), sizeof(int));
                 cmd->position += sizeof(int);
-                RAM[argument] = value1;
+                spu->RAM[argument] = value1;
             }
             else if (cmd->buffer[cmd->position - 1] & RAM_BIT)
             {
-                argument = stk->reg[(size_t) cmd->buffer[cmd->position] - 1];
+                argument = spu->reg[(size_t) cmd->buffer[cmd->position] - 1];
                 cmd->position += sizeof(char);
                 
-                RAM[argument] = value1;
+                spu->RAM[argument] = value1;
             }
             else
             {
-                stk->reg[(size_t) cmd->buffer[cmd->position] - 1] = value1;
+                spu->reg[(size_t) cmd->buffer[cmd->position] - 1] = value1;
                 cmd->position += sizeof(char);
             }
 }
@@ -107,18 +107,18 @@ DEF_CMD("div", DIV, NO_ARGUMENTS,
 DEF_CMD("sqrt", SQRT, NO_ARGUMENTS,
 {
             cmd->position++;
-            value1 = 100 * StackPop(stk);
+            value1 = 100 * StackPop(&(spu->stk));
             value1 =(int) sqrt((double) value1) / 10;
-            StackPush(value1, stk);
+            StackPush(value1, &(spu->stk));
 }
 )
 
 DEF_CMD("sin", SIN, NO_ARGUMENTS,
 {
             cmd->position++;
-            value1 = StackPop(stk);
+            value1 = StackPop(&(spu->stk));
             value1 = (int) sin((double) value1);
-            StackPush(value1, stk);
+            StackPush(value1, &(spu->stk));
 }
 )
 
@@ -126,9 +126,9 @@ DEF_CMD("sin", SIN, NO_ARGUMENTS,
 DEF_CMD("cos", COS, NO_ARGUMENTS, 
 {
             cmd->position++;
-            value1 = StackPop(stk);
+            value1 = StackPop(&(spu->stk));
             value1 = (int) cos((double) value1);
-            StackPush(value1, stk);
+            StackPush(value1, &(spu->stk));
 }
 )
 
@@ -136,7 +136,7 @@ DEF_CMD("in", IN, NO_ARGUMENTS,
 {
             cmd->position++;
             scanf("%d", &argument);
-            StackPush(argument, stk);
+            StackPush(argument, &(spu->stk));
 }
 )
 
@@ -165,17 +165,17 @@ DEF_CMD("jm",   JM,   LABEL_ARGUMENTS, {})
 DEF_CMD("call", CALL, LABEL_ARGUMENTS,
 {
             memcpy(&argument, (int*)(cmd->buffer + cmd->position + 1), sizeof(int));
-            value3 = (int) cmd->position;
+            value3 = (int)  cmd->position;
             value1 = (int) (cmd->position + sizeof(char) + sizeof(int));
             
-            StackPush(value1, adress);
+            StackPush(value1, &(spu->adress));
             cmd->position = (size_t)(value3 - argument);
 }
 )
 
 DEF_CMD("ret", RET, NO_ARGUMENTS,
 {
-            value1 = StackPop(adress);
+            value1 = StackPop(&(spu->adress));
             cmd->position = (size_t) value1;
 }
 )
@@ -183,7 +183,7 @@ DEF_CMD("ret", RET, NO_ARGUMENTS,
 DEF_CMD("out", OUT, NO_ARGUMENTS,
 {
             cmd->position++;
-            value1 = StackPop(stk);
+            value1 = StackPop(&(spu->stk));
             printf("|%2d|\n", value1);
 }
 )
@@ -191,5 +191,19 @@ DEF_CMD("out", OUT, NO_ARGUMENTS,
 DEF_CMD("htl", HTL, NO_ARGUMENTS,
 { 
             return;
+}
+)
+
+DEF_CMD("draw", DRAW, NO_ARGUMENTS,
+{
+            cmd->position++;
+            for(size_t i = 0; i < SQUARE_SIDE; i++)
+            {
+                for(size_t j = 0; j < SQUARE_SIDE; j++)
+                {
+                    printf("%2d", spu->RAM[ i * SQUARE_SIDE + j ]);
+                }
+                printf("\n");
+            }
 }
 )

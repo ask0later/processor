@@ -22,7 +22,7 @@ enum Commands
     JBE  = 14, JE   = 15, JNE  = 16,
     JMP  = 17, JM   = 18,
     CALL = 19, RET  = 20, 
-    OUT  = 21, HTL  = 22
+    OUT  = 21, HTL  = 22, DRAW = 23
 };
 
 #endif

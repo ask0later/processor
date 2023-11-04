@@ -9,6 +9,7 @@ void CreateBuffer(Text* cmd)
     cmd->position = 0;
     
     cmd->buffer = (char*) calloc(cmd->sizebuf, sizeof(char));
+    cmd->num_label = 0;
     
     Read_Binary_File(cmd);
 }

@@ -22,6 +22,8 @@ struct Text
 
     int* codebuf;
     size_t counter;
+
+    size_t num_label;
 };
 
 

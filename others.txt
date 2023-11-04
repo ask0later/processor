@@ -142,48 +142,7 @@ ret
 
 KVADRATKA
 
-call MAIN
-htl
-MAIN:
-push 1
-push 2
-push 1
-pop rcx
-pop rbx
-pop rax
-call DISCR
-push [5]
-sqrt
-pop [6]
-push rbx
-push [6]
-add
-push 2
-div
-push rax
-div
-out
-push rbx
-push [6]
-sub
-push 2
-div
-push rax
-div
-out
-ret
-DISCR:
-push rbx
-push rbx
-mul
-push 4
-push rax
-push rcx
-mul
-mul
-sub
-pop [5]
-ret
+
 
 
 call MAIN
@@ -250,3 +209,59 @@ push 1
 pop [rcx]
 ret
 
+
+
+
+call MAIN
+draw
+htl
+MAIN:
+push 1
+pop [12]
+push 1
+pop [24]
+ret
+
+
+
+
+
+
+
+
+
+
+
+
++__________________
+
+call MAIN
+draw
+htl
+MAIN:
+push 2
+pop rax
+push 0
+pop rbx
+LOOP:
+push rbx
+push 1
+add
+pop rbx
+call RAM
+push rbx
+push 10
+jne LOOP
+ret
+RAM:
+push rax
+push 11
+mul
+push rbx
+add
+pop rcx
+push 1
+push rcx
+out
+pop [rcx]
+ret

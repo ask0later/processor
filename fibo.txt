@@ -1,0 +1,41 @@
+push 0
+pop rax
+LOOP:
+push rcx
+pop rax
+push rax
+push 1
+add
+pop rax
+push rax
+pop rcx
+call FIBO
+push rbx
+out
+push rcx
+push 15
+jb LOOP
+htl
+FIBO:
+push rax
+push 2
+jbe BAZA
+push rax
+push 1
+sub
+pop rax
+push rax
+push 1
+sub
+call FIBO
+pop rax
+push rbx
+call FIBO
+push rbx
+add
+pop rbx
+ret
+BAZA:
+push 1
+pop rbx
+ret

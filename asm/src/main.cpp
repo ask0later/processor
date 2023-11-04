@@ -12,9 +12,9 @@ int main(const int argc, const char* argv[])
         struct Text    buf = {};
         struct Command cmd = {};
     
-        struct Label Labels[NUM_LABELS] = {{"XXX", -1,}, {"XXX", -1,}, {"XXX", -1,},
-                                           {"XXX", -1,}, {"XXX", -1,}, {"XXX", -1,}, 
-                                           {"XXX", -1,}, {"XXX", -1,}, {"XXX", -1,}, {"XXX", -1,}};
+        struct Label Labels[NUM_LABELS] = {{"X", -1,}, {"X", -1,}, {"X", -1,},
+                                           {"X", -1,}, {"X", -1,}, {"X", -1,}, 
+                                           {"X", -1,}, {"X", -1,}, {"X", -1,}, {"X", -1,}};
 
 
         CreateBuffer(&buf, &cmd, input_file);
@@ -35,11 +35,11 @@ int main(const int argc, const char* argv[])
             DeleteBuffer(&buf, &cmd);
             return 1;
         }
-        
+
         OutputBinary(&buf, output_file);
         DeleteBuffer(&buf, &cmd);
         return 0;
     }
-    
+    printf("error: insufficient number of command line arguments\n");
     return 1;
 }

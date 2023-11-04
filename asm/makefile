@@ -20,10 +20,10 @@ OBJ = $(patsubst $(PREF_SRC)%.cpp, $(PREF_OBJ)%.o, $(SRC))
 
 
 $(TARGET) : $(OBJ) 
-	$(CC) $(OBJ) $(CFLAGS) -o $(TARGET)
+	@$(CC) $(OBJ) $(CFLAGS) -o $(TARGET)
 
 $(PREF_OBJ)%.o : $(PREF_SRC)%.cpp
-	$(CC) $(DEFINE) $(CFLAGS) -c $< -o $@
+	@$(CC) $(DEFINE) $(CFLAGS) -c $< -o $@
 
 clean : 
 	rm $(TARGET) $(PREF_OBJ)*.o

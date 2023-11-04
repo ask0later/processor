@@ -1,0 +1,82 @@
+call -6
+htl
+push 1
+push 2
+push 1
+pop rcx
+pop rbx
+pop rax
+call -53
+push [5]
+sqrt
+pop [6]
+push rbx
+push [6]
+add
+push 2
+div
+push rax
+div
+out
+push rbx
+push [6]
+sub
+push 2
+div
+push rax
+div
+out
+ret
+push rbx
+push rbx
+mul
+push 4
+push rax
+push rcx
+mul
+mul
+sub
+pop [5]
+ret
+ret
+call -6
+htl
+push 1
+push 2
+push 1
+pop rcx
+pop rbx
+pop rax
+call -53
+push [5]
+sqrt
+pop [6]
+push rbx
+push [6]
+add
+push 2
+div
+push rax
+div
+out
+push rbx
+push [6]
+sub
+push 2
+div
+push rax
+div
+out
+ret
+push rbx
+push rbx
+mul
+push 4
+push rax
+push rcx
+mul
+mul
+sub
+pop [5]
+ret
+ret
