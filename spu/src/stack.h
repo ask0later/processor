@@ -26,7 +26,6 @@ struct Stack
     elem_t* sequence;
     int size;
     int capacity;
-    int reg[NUM_REG];
 
 #ifdef HASH_VERIFICATION
     long unsigned int hash_buf;

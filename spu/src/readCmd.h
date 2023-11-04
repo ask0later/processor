@@ -11,8 +11,6 @@
 
 #include "../../enum.h"
 
-
-
 struct Text
 {
     size_t  sizebuf;
@@ -24,10 +22,9 @@ struct Text
     size_t  counter;
 };
 
-
-void     CreateBuffer(Text* buf);
+void     CreateBuffer(Text* buf, const char* binary);
 void     DeleteBuffer(Text* buf);
-void Read_Binary_File(Text* buf);
+void Read_Binary_File(Text* buf, const char* binary);
 
-size_t  Get_Size_File();
+size_t  Get_Size_File(const char* binary);
 #endif

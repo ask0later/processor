@@ -2,22 +2,26 @@
 #include "stack.h"
 #include "processor.h"
 
-int main()
+int main(const int argc, const char* argv[])
 {
-    struct Text  cmd    = {};
-    struct Stack stk    = {};
-    struct Stack adress = {};
-    
-    int RAM[SIZE_RAM]   = {};
-    CreateBuffer(&cmd);
-    StackCtor(&stk);
-    StackCtor(&adress);
-    
-    Processor(&stk, &adress, &cmd, RAM);
+    if (argc == 2)
+    {
+        const char* binary = argv[1];
+        struct Text      cmd = {};
+        struct Proc      spu = {};
 
-    OutputCyrcle(RAM);
+        CreateBuffer(&cmd, binary);
+        StackCtor(&(spu.stk));
+        StackCtor(&(spu.adress));
+    
+        Processor(&spu, &cmd);
 
-    StackDtor(&adress);
-    StackDtor(&stk);
-    DeleteBuffer(&cmd);
+        StackDtor(&(spu.adress));
+        StackDtor(&(spu.stk));
+        DeleteBuffer(&cmd);
+        return 0;
+    }
+    printf("error: insufficient number of command line arguments\n");
+    
+    return 1;
 }
