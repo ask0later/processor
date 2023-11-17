@@ -201,7 +201,10 @@ DEF_CMD("draw", DRAW, NO_ARGUMENTS,
             {
                 for(size_t j = 0; j < SQUARE_SIDE; j++)
                 {
-                    printf("%2d", spu->RAM[ i * SQUARE_SIDE + j ]);
+                    if (spu->RAM[ i * SQUARE_SIDE + j ] == 1)
+                        printf("# ");
+                    else if (spu->RAM[ i * SQUARE_SIDE + j ] == 0)
+                        printf(". ");
                 }
                 printf("\n");
             }

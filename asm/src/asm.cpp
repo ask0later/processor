@@ -6,17 +6,20 @@ int Assembler(Text* buf, Command* cmd, Label* Labels)
     assert(buf);
     assert(cmd);
         
-    while (buf->nline < buf->nlines + 1)
+    for (size_t numberline = 0; numberline < buf->num_lines; numberline++)
     {
-        int error_code = ParseInstruction(buf, cmd, Labels);
-        buf->position ++;
+        ReadLine(buf->start_line[numberline], cmd);
+        ParseOperand(buf, cmd, Labels);
+
         EmitInstrctionBinary(cmd, buf, Labels);
 
         cmd->code   = (char) MAX_IN_BYTE;
         cmd->value  =            INT_MAX;
-        if (error_code != 0)
-            return error_code; 
-        buf->nline++;
+
+        
+        memset(cmd->argument, 0, strlen(cmd->argument));
+        memset(cmd->command_name, 0, strlen(cmd->command_name));
+        buf->num_line++;
     }
     return 0;
 }
@@ -28,24 +31,44 @@ void OutputBinary(Text* buf, const char* output_file)
 
     FILE* fname = fopen(output_file, "wb");
     assert(fname);
-
-    fwrite(buf->binarycode, (size_t) buf->binary_position, sizeof(char), fname);
+    
+    fwrite(buf->binary_code, (size_t) buf->binary_position, sizeof(char), fname);
     
     fclose(fname);
 }
 
-int ParseInstruction(Text* buf, Command* cmd, Label* Labels)
+ProcessorError ReadLine(char* line, Command* cmd)
 {
-    assert(cmd);
-    assert(buf);
-    assert(Labels);
+    if (*line == '\0')
+        return ProcessorNO_ERROR;
+        
+    while (*line == ' ')
+        line++;
+        
+    line = ReadWord(line, &cmd->command_name);
 
-    sscanf(buf->buffer + buf->position, "%s", cmd->command_name);
-    buf->position += strlen(cmd->command_name);
+    while (*line == ' ')
+        line++;
 
-    return ParseOperand(buf, cmd, Labels);
+    line = ReadWord(line, &cmd->argument);
+
+    return ProcessorNO_ERROR;
 }
 
+char* ReadWord(char* line, char** name)
+{
+    size_t i = 0;
+    char temp[MAX_SIZE_ARGUMENT] = {};
+
+    while((*line != ' ') && (*line != '\0'))
+    {
+        temp[i++] = *line;
+        line++;
+    }
+    memcpy(*name, temp, i);
+
+    return line;
+}
 int ParseOperand(Text* buf, Command* cmd, Label* Labels)
 {
     assert(cmd);
@@ -56,7 +79,7 @@ int ParseOperand(Text* buf, Command* cmd, Label* Labels)
     {
         if (strcmp(cmd->command_name, cmds[counter].name) == 0)
         {
-            cmd->code = (char) (cmds[counter].valueName);
+            cmd->code = (char) (cmds[counter].value_name);
 
             if (cmds[counter].argument_type == STACK_ARGUMENTS)
                 return  ParseValueArgument(buf, cmd);
@@ -69,30 +92,33 @@ int ParseOperand(Text* buf, Command* cmd, Label* Labels)
     
     return ParseDefineLabel(buf, cmd, Labels);;
 }
+
 int ParseDefineLabel(Text* buf, Command* cmd, Label* Labels)
 {
     assert(cmd);
     assert(buf);
-    
-    buf->position = buf->position - strlen(cmd->command_name);
 
-    if (cmd->command_name[strlen(cmd->command_name) - 1] == ':')
+    size_t length = strlen(cmd->command_name);
+
+    if (cmd->command_name[length - 1] == ':')
     {
-        memcpy(cmd->argument, cmd->command_name, strlen(cmd->command_name) - 1);
+        char label_name[MAX_SIZE_ARGUMENT] = {};
 
-        int result = CompareNameLabels(cmd->argument, Labels);
+        memcpy(label_name, cmd->command_name, length - 1);
+
+        int result = CompareNameLabels(label_name, Labels);
         if (result == -1)
         {
-            memcpy(Labels[cmd->numberlabelcmd].name, cmd->argument, strlen(cmd->argument));
-            Labels[cmd->numberlabelcmd].value_ptr = buf->binary_position; 
+            memcpy(Labels[cmd->num_labels].name, cmd->argument, strlen(cmd->argument));
+            Labels[cmd->num_labels].value_ptr = buf->binary_position;
 
-            cmd->numberlabelcmd++;
+            cmd->num_labels++;
         }
         else
             Labels[result].value_ptr = buf->binary_position;
     }
-    
-    buf->position += strlen(cmd->command_name);
+    //else
+        //return function or label not found
 
     return FindErrors(cmd);
 }
@@ -101,21 +127,16 @@ int ParseLabelArgument(Text* buf, Command* cmd, Label* Labels)
     assert(cmd);
     assert(buf);
 
-    sscanf(buf->buffer + buf->position, "%s", cmd->argument);
-    
     int result = CompareNameLabels(cmd->argument, Labels);
     
     if (result == -1)
     {
-        memcpy(Labels[cmd->numberlabelcmd].name, cmd->argument, strlen(cmd->argument) + 1);
+        memcpy(Labels[cmd->num_labels].name, cmd->argument, strlen(cmd->argument) + 1);
         cmd->value = result;
-        cmd->numberlabelcmd++;
+        cmd->num_labels++;
     }
     else
         cmd->value = Labels[result].value_ptr;
-
-    buf->position += strlen(cmd->argument);
-    buf->position += SPACE;
       
     return FindErrors(cmd);  
 }
@@ -125,59 +146,38 @@ int ParseValueArgument(Text* buf, Command* cmd)
     assert(cmd);
     assert(buf);
 
-    if (sscanf(buf->buffer + buf->position, "%d", &cmd->value) == 1)
+    if (sscanf(cmd->argument, "%d", &cmd->value) == 1)
     {
-        cmd->code |= NUM_BIT;
-
-        sscanf(buf->buffer + buf->position, "%s", cmd->argument);
-        buf->position += strlen(cmd->argument);        
+        cmd->code |= NUM_BIT;    
     }
     else
     {
         char string[MAX_SIZE_ARGUMENT] = {};
 
-        sscanf(buf->buffer + buf->position, "%s", string);
+        sscanf(cmd->argument, "%s", string);
+        size_t lenght = strlen(string);
         
-        if ((string[0] == '[') && (sscanf(buf->buffer + buf->position + 2, "%d", &cmd->value) == 1))
+        if ((string[0] == '[') && (sscanf(string + 1, "%d", &cmd->value) == 1))
         {
             cmd->code |= RAM_BIT;
             cmd->code |= NUM_BIT;
-
-            sscanf(buf->buffer + buf->position + 2, "%s", cmd->argument);
-            buf->position += strlen(cmd->argument) - 1;
-            buf->position += 2 * sizeof(char);
         }
         else if (string[0] == '[')
         {
             cmd->code |= RAM_BIT;
             cmd->code |= REG_BIT;
 
-            memcpy(cmd->reg, string + 1, 3 * sizeof(char));
-            buf->position += strlen(cmd->reg);
-            buf->position += 2 * sizeof(char);
+            memcpy(cmd->reg, string + 1, lenght - 2);
         }
         else
         {
             cmd->code |= REG_BIT;
 
-            memcpy(cmd->reg, string, strlen(string));
-            buf->position += strlen(cmd->reg);
+            memcpy(cmd->reg, string, lenght);
         }
     }
-
-    buf->position += SPACE;
       
     return FindErrors(cmd);  
-}
-
-int WriteArrayRegister(Command* cmd)
-{
-    assert(cmd);
-
-    for (size_t counter = 0; counter < sizeof(reg) / sizeof(char*); counter++)
-        if (strcmp(cmd->reg, reg[counter]) == 0)
-            return ((int)counter + 1);
-    return 0;
 }
 
 int CompareNameLabels(char* string, Label* Labels)
@@ -202,20 +202,20 @@ void EmitInstrctionBinary(Command* cmd, Text* buf, Label* Labels)
     if (cmd->code == (char) MAX_IN_BYTE)
         return;
 
-    cmd->numberlabelcmd--;
+    cmd->num_labels--;
 
-    buf->binarycode[buf->binary_position] = cmd->code;
+    buf->binary_code[buf->binary_position] = cmd->code;
 
     if (cmd->code & NUM_BIT)
     {
         (buf->binary_position)++;
-        memcpy(buf->binarycode + buf->binary_position, &cmd->value, sizeof(cmd->value));
+        memcpy(buf->binary_code + buf->binary_position, &cmd->value, sizeof(cmd->value));
         buf->binary_position += (int) sizeof(int);
     }
     else if (cmd->code & REG_BIT)
     {
         (buf->binary_position)++;
-        buf->binarycode[buf->binary_position] = (char) WriteArrayRegister(cmd);
+        buf->binary_code[buf->binary_position] = (char) (cmd->reg[1] - 'a' + (char)1);
         (buf->binary_position)++;
     }
     else if (cmd->value != INT_MAX)
@@ -223,14 +223,14 @@ void EmitInstrctionBinary(Command* cmd, Text* buf, Label* Labels)
         int offset = buf->binary_position - cmd->value;
         
         (buf->binary_position)++;
-        memcpy(buf->binarycode + buf->binary_position, &offset, sizeof(int));
+        memcpy(buf->binary_code + buf->binary_position, &offset, sizeof(int));
         buf->binary_position += (int) sizeof(int);
     }
     else
     {
         (buf->binary_position)++;
     }
-    cmd->numberlabelcmd++;
+    cmd->num_labels++;
 }
 
 int FindErrors(Command* cmd)
@@ -239,7 +239,7 @@ int FindErrors(Command* cmd)
     if (strlen(cmd->reg) > REF_SIZE_REGISTR)            errors = 1 << 0;
     if (strlen(cmd->command_name) > REF_SIZE_COMMAND)   errors = 1 << 1;
     if (strlen(cmd->argument) > REF_SIZE_ARGUMENT)      errors = 1 << 2;
-    if (cmd->numberlabelcmd > NUM_LABELS - 1)           errors = 1 << 3;
+    if (cmd->num_labels > NUM_LABELS - 1)               errors = 1 << 3;
 
     return errors;
 }
@@ -251,20 +251,20 @@ int DumpErrors(int errors, Text* buf, Command* cmd)
     switch(errors) 
     {
         case 1 << 0:
-            printf("ERRORS : WRONG REGISTER ENTERED AFTER THE COMMAND\n");
-            printf("cmds.txt:%lu: %s%s\n", buf->nline + 1, cmd->command_name, cmd->reg);
+            printf("error : wrong register entered\n");
+            printf("cmds.txt:%lu: %s%s\n", buf->num_line + 1, cmd->command_name, cmd->reg);
             break;
         case 1 << 1:
-            printf("ERRORS : WRONG COMMAND ENTERED\n");
-            printf("cmds.txt:%lu: %s\n", buf->nline + 1, cmd->command_name);
+            printf("ERRORS : wrong coomand entered\n");
+            printf("cmds.txt:%lu: %s\n", buf->num_line + 1, cmd->command_name);
             break;
         case 1 << 2:
             printf("ERRORS : WRONG ARGUMENT ENTERED AFTER THE COMMAND\n");
-            printf("cmds.txt:%lu\n", buf->nline + 1);
+            printf("cmds.txt:%lu\n", buf->num_line + 1);
             break;
         case 1 << 3:
             printf("ERRORS : LABEL COUNT IS HIGHER THAN NORMAL\n");
-            printf("cmds.txt:%lu\n", buf->nline + 1);
+            printf("cmds.txt:%lu\n", buf->num_line + 1);
             break;
         default:
             printf("EXTRA ERROR\n");

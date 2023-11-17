@@ -16,7 +16,6 @@ const struct OneCommand cmds[] = {
     {"null", NO_ARGUMENTS, 999}
 };
 
-const char* const         reg[] = {"rax", "rbx", "rcx"};
 
 const char RAX = 1;
 const char RBX = 2;
@@ -38,7 +37,9 @@ int         ParseValueArgument(Text* buf, Command* cmd               );
 int         ParseLabelArgument(Text* buf, Command* cmd, Label* Labels);
 int           ParseDefineLabel(Text* buf, Command* cmd, Label* Labels);
 
-int         WriteArrayRegister(Command* cmd                          );
+ProcessorError ReadLine(char* line, Command* cmd);
+char* ReadWord(char* line, char** name);
+
 void      EmitInstrctionBinary(Command* cmd, Text* buf, Label* Labels);
 int          CompareNameLabels(char* string,            Label* Labels);
 void              OutputBinary(Text* buf, const char* output_file     );
