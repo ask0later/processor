@@ -15,7 +15,6 @@ int Assembler(Text* buf, Command* cmd, Label* Labels)
 
         cmd->code   = (char) MAX_IN_BYTE;
         cmd->value  =            INT_MAX;
-
         
         memset(cmd->argument, 0, strlen(cmd->argument));
         memset(cmd->command_name, 0, strlen(cmd->command_name));
@@ -98,8 +97,12 @@ int ParseDefineLabel(Text* buf, Command* cmd, Label* Labels)
     assert(cmd);
     assert(buf);
 
+    
     size_t length = strlen(cmd->command_name);
-
+    
+    if (length == 0)
+        return 0;
+    
     if (cmd->command_name[length - 1] == ':')
     {
         char label_name[MAX_SIZE_ARGUMENT] = {};

@@ -1,6 +1,6 @@
 
 
-#define DEF_LABEL_CMD(symbol)                                                                \
+#define DEF_LABEL_CMD(num, symbol)                                                           \
             value1 = StackPop(&(spu->stk));                                                  \
             value2 = StackPop(&(spu->stk));                                                  \
             if (value2 symbol value1)                                                        \
@@ -140,18 +140,17 @@ DEF_CMD("in", IN, NO_ARGUMENTS,
 }
 )
 
-DEF_CMD("ja",  JA,  LABEL_ARGUMENTS, {DEF_LABEL_CMD(> )})
+DEF_CMD("ja",  JA,  LABEL_ARGUMENTS,  {DEF_LABEL_CMD(JA,  > )})
 
-DEF_CMD("jae", JAE, LABEL_ARGUMENTS, {DEF_LABEL_CMD(>=)})
+DEF_CMD("jae", JAE, LABEL_ARGUMENTS,  {DEF_LABEL_CMD(JAE, >=)})
 
-DEF_CMD("jb",  JB,  LABEL_ARGUMENTS, {DEF_LABEL_CMD(<) }) 
+DEF_CMD("jb",  JB,  LABEL_ARGUMENTS,  {DEF_LABEL_CMD(JB,  < )}) 
         
-DEF_CMD("jbe", JBE, LABEL_ARGUMENTS, {DEF_LABEL_CMD(<=)})
+DEF_CMD("jbe", JBE, LABEL_ARGUMENTS,  {DEF_LABEL_CMD(JBE, <=)})
 
-DEF_CMD("je",  JE,  LABEL_ARGUMENTS, {DEF_LABEL_CMD(==)})
+DEF_CMD("jbe", JE,  LABEL_ARGUMENTS,  {DEF_LABEL_CMD(JE,  ==)})
 
-DEF_CMD("jne", JNE, LABEL_ARGUMENTS, {DEF_LABEL_CMD(!=)})       
-
+DEF_CMD("jne", JNE, LABEL_ARGUMENTS,  {DEF_LABEL_CMD(JNE, != )})
 
 DEF_CMD("jmp", JMP, LABEL_ARGUMENTS,
 {

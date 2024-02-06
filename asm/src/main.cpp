@@ -12,10 +12,7 @@ int main(const int argc, const char* argv[])
         struct Text    buf = {};
         struct Command cmd = {};
     
-        struct Label Labels[NUM_LABELS] = {{"X", -1,}, {"X", -1,}, {"X", -1,},
-                                           {"X", -1,}, {"X", -1,}, {"X", -1,}, 
-                                           {"X", -1,}, {"X", -1,}, {"X", -1,}, {"X", -1,}};
-
+        struct Label Labels[NUM_LABELS] = {};
 
         CreateBuffer(&buf, &cmd, input_file);
         

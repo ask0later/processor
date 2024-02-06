@@ -5,9 +5,9 @@ int Processor(Proc* spu, Text* cmd)
 {
     FILE* fp = fopen("stack.txt", "a");
 
-    while (cmd->position != cmd->sizebuf)
+    while (cmd->position != cmd->sizebuf - 1)
     {
-        //printf(" position = %d |command = %d|\n", cmd->position, cmd->buffer[cmd->position]);
+        //printf(" position = %d |command = %d| sizebuf = %lu\n", cmd->position, cmd->buffer[cmd->position], cmd->sizebuf);
         if (cmd->buffer[cmd->position] == HTL)
             return 0;
         

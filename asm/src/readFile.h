@@ -11,6 +11,8 @@
 
 #include "../../enum.h"
 
+
+
 enum ProcessorError
 {
     ProcessorNO_ERROR,
@@ -18,8 +20,9 @@ enum ProcessorError
     Processor
 };
 
-const unsigned char MAX_IN_BYTE    = 255;
-const size_t        NUM_LABELS     =  10;
+const unsigned char MAX_IN_BYTE    =  255;
+const size_t        NUM_LABELS     =   30;
+const size_t   MAX_SIZE_BUFFER     = 2048;
 
 const size_t     MAX_SIZE_ARGUMENT =  50;
 const size_t     SIZEBINARY        = 255;

@@ -10,7 +10,7 @@ ProcessorError CreateBuffer(Text* buf, Command* cmd, const char*  input_file)
     buf->buffer     = (char*) calloc(buf->size_buffer, sizeof(char));
     if (buf->buffer == NULL) {return ProcessorALLOC_ERROR;}
 
-    buf->binary_code = (char*) calloc(256,          sizeof(char));
+    buf->binary_code = (char*) calloc(MAX_SIZE_BUFFER, sizeof(char));
     if (buf->binary_code == NULL) {return ProcessorALLOC_ERROR;}
 
     

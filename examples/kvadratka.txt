@@ -40,7 +40,6 @@ mul
 sub
 pop [5]
 ret
-
 push 0
 pop rax
 push 0
